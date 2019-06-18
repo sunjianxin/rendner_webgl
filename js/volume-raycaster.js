@@ -336,6 +336,10 @@ window.onload = function(){
     };
     colormapImage.src = "colormaps/cool-warm-paraview.png";
 
+    /* Setup default lower and upper bound on the intensity */
+    gl.uniform1f(shader.uniforms["lower_bound"], lower_bound);
+    gl.uniform1f(shader.uniforms["upper_bound"], upper_bound);
+
     var slider_lower_bound = document.getElementById("lower_bound");
     var output_lower_bound = document.getElementById("demo_lower_bound");
     output_lower_bound.innerHTML = slider_lower_bound.value/100; // Display the default slider value
