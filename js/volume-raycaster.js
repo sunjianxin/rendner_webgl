@@ -37,9 +37,9 @@ var HEIGHT = 480;
 //var y_size = 256;
 //var z_size = 118;
 
-var x_size = 60;
-var y_size = 84;
-var z_size = 96;
+var x_size;// = 60;
+var y_size;// = 84;
+var z_size;// = 96;
 
 //var x_size = 40;
 //var y_size = 56;
@@ -63,7 +63,38 @@ var colormaps = {
 function readFile() {
     var reader = new FileReader();
     file = document.getElementById("uploadText").files[0];
-    reader.onload = function (e) {
+    console.log("name", typeof(file.name));
+    var file_split = file.name.split("_");
+    console.log(file_split);
+    console.log(typeof(file_split))
+    z_size = parseInt(file_split[1]);
+    y_size = parseInt(file_split[2]);
+    rest = file_split[3];
+    x_size = parseInt(rest.substring(0,rest.length-4));
+    console.log("deminsions: ", x_size, y_size, z_size);
+
+    var loadingProgressText = document.getElementById("loadingText");
+    var loadingProgressBar = document.getElementById("loadingProgressBar");
+    loadingProgressText.innerHTML = "Loading Volume";
+    loadingProgressBar.setAttribute("style", "width: 0%");
+   
+    reader.onprogress = function(evt) {
+        console.log("loaded",evt.loaded);
+        console.log("total",evt.total);
+        var percent = evt.loaded / evt.total;
+        //var vol_size = volDims[0] * volDims[1] * volDims[2];
+        //var percent = evt.loaded / vol_size * 100;
+        console.log("percent", percent.toFixed(2));
+        loadingProgressBar.setAttribute("style", "width: " + percent.toFixed(2) + "%");
+    };
+    reader.onerror = function(evt) {
+        loadingProgressText.innerHTML = "Error Loading Volume";
+        loadingProgressBar.setAttribute("style", "width: 0%");
+    };
+    reader.onload = function (evt) {
+        loadingProgressText.innerHTML = "Loaded Volume";
+        loadingProgressBar.setAttribute("style", "width: 100%");
+
         var text = new Float32Array(reader.result);
         console.log(text);
         console.log(text.length);
