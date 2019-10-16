@@ -172,6 +172,7 @@ var selectLocalVolume = function(text) {
     }
     console.log(text_new[0])
     console.log(text[0])
+    console.log("coler scale result: ", text_new)
     max = text_new[0];
     min = text_new[0];
     for (var i = 0; i < text.length; i++) {
