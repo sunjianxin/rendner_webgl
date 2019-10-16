@@ -32,6 +32,8 @@ var targetFrameTime = 32;
 var samplingRate = 1.0;
 var WIDTH = 640;
 var HEIGHT = 480;
+var lock = false;
+var bound_diff = 0;
 
 //var x_size = 256;
 //var y_size = 256;
@@ -166,13 +168,14 @@ var selectLocalVolume = function(text) {
     console.log(text_new.length)
     console.log(text.length)
     for (var i = 0; i < text.length; i++) {
-        text_new[i] = Math.floor(179*text[i]);
+        //text_new[i] = Math.floor(179*text[i]);
+        text_new[i] = Math.floor(205*text[i]) + 50;
         //text_new[i] = Math.ceil(179*text[i]);
-        //text_new[i] = 250;
+        //text_new[i] = 200;
     }
     console.log(text_new[0])
     console.log(text[0])
-    console.log("coler scale result: ", text_new)
+    console.log("coler scale resulddt: ", text_new)
     max = text_new[0];
     min = text_new[0];
     for (var i = 0; i < text.length; i++) {
@@ -375,23 +378,42 @@ window.onload = function(){
     var slider_lower_bound = document.getElementById("lower_bound");
     var output_lower_bound = document.getElementById("demo_lower_bound");
     output_lower_bound.innerHTML = slider_lower_bound.value/100; // Display the default slider value
-
-    // Update the current slider value (each time you drag the slider handle)
-    slider_lower_bound.oninput = function() {
-        var lower_bound = this.value/100;
-        output_lower_bound.innerHTML = lower_bound;
-        gl.uniform1f(shader.uniforms["lower_bound"], lower_bound);
-    }
-    
     var slider_upper_bound = document.getElementById("upper_bound");
     var output_upper_bound = document.getElementById("demo_upper_bound");
     output_upper_bound.innerHTML = slider_upper_bound.value/100; // Display the default slider value
 
     // Update the current slider value (each time you drag the slider handle)
+    slider_lower_bound.oninput = function() {
+        if (!lock) {
+            var lower_bound = this.value/100;
+            output_lower_bound.innerHTML = lower_bound;
+            gl.uniform1f(shader.uniforms["lower_bound"], lower_bound);
+        } else {
+            var lower_bound = this.value/100;
+            output_lower_bound.innerHTML = lower_bound;
+            gl.uniform1f(shader.uniforms["lower_bound"], lower_bound);
+            var upper_bound = Number(this.value) + bound_diff;
+            slider_upper_bound.value = upper_bound;
+            upper_bound = upper_bound/100;
+            output_upper_bound.innerHTML = upper_bound;
+            gl.uniform1f(shader.uniforms["upper_bound"], upper_bound);
+        }
+    }
+    // Update the current slider value (each time you drag the slider handle)
     slider_upper_bound.oninput = function() {
         var upper_bound = this.value/100;
         output_upper_bound.innerHTML = upper_bound;
         gl.uniform1f(shader.uniforms["upper_bound"], upper_bound);
+    }
+
+    var check_box_lock = document.getElementById("lock");
+    // Update the current slider value (each time you drag the slider handle)
+    check_box_lock.oninput = function() {
+        lock = this.checked
+        if (lock) {
+            bound_diff = slider_upper_bound.value - slider_lower_bound.value;
+            console.log("locked: ", lock, "; bound diff: ", bound_diff);
+        }
     }
 
 }
